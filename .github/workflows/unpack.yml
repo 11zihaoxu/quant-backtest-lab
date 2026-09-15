@@ -1,0 +1,41 @@
+name: Bootstrap clean snapshot
+
+on:
+  push:
+    paths:
+      - quant-backtest-lab-clean-20260915-bd73ad5.zip
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Unpack clean snapshot
+        run: |
+          set -euo pipefail
+          ZIP="quant-backtest-lab-clean-20260915-bd73ad5.zip"
+          test -f "$ZIP"
+          TMP="$(mktemp -d)"
+          unzip -q "$ZIP" -d "$TMP"
+          rm -f "$TMP/.github/workflows/ci.yml"
+          cp -a "$TMP"/. .
+          rm -f "$ZIP"
+      - name: Commit and push
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Publish clean-room project snapshot"
+          git pull --rebase origin main
+          git push origin HEAD:main
