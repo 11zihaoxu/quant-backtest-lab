@@ -1,0 +1,18 @@
+data:
+  periods: 3000
+  seed: 20260915
+  periods_per_year: 8760
+  start_price: 100.0
+  annual_drift: 0.05
+  annual_volatility: 0.35
+
+strategy:
+  name: sma_crossover
+  fast_window: 10
+  slow_window: 40
+  allocation: 0.90
+
+execution:
+  initial_cash: 10000.0
+  fee_bps: 2.0
+  slippage_bps: 5.0
